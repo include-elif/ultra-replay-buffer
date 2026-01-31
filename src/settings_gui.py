@@ -431,11 +431,22 @@ def run_gui():
 
     def kill_service_processes():
         """Kill all OBS-Ultra-Replay-Buffer-Service.exe processes"""
-        # Kill by name
-        os.system('taskkill /F /IM OBS-Ultra-Replay-Buffer-Service.exe >nul 2>&1')
-        time.sleep(0.5)
-        # Kill again to be sure (PyInstaller parent/child)
-        os.system('taskkill /F /IM OBS-Ultra-Replay-Buffer-Service.exe >nul 2>&1')
+        if getattr(sys, 'frozen', False):
+            # Kill by name
+            os.system('taskkill /F /IM OBS-Ultra-Replay-Buffer-Service.exe >nul 2>&1')
+            time.sleep(0.5)
+            # Kill again to be sure (PyInstaller parent/child)
+            os.system('taskkill /F /IM OBS-Ultra-Replay-Buffer-Service.exe >nul 2>&1')
+        else:
+            # Dev mode: kill by PID
+            if os.path.exists(PID_FILE):
+                try:
+                    with open(PID_FILE, "r") as f:
+                        pid = f.read().strip()
+                        if pid:
+                            os.system(f'taskkill /F /PID {pid} >nul 2>&1')
+                except:
+                    pass
         time.sleep(0.3)
         # Clean up files
         for f in [PID_FILE, LOCK_FILE]:
@@ -452,12 +463,8 @@ def run_gui():
             stop_obs()
         
         root.after(300, update_status)
-        if include_obs_var.get():
-            save_status_label.config(text="✓ Stopped!", fg="green")
-            root.after(2000, lambda: save_status_label.config(text=""))
-        else:
-            save_status_label.config(text="Script not running", fg="gray")
-            root.after(2000, lambda: save_status_label.config(text=""))
+        save_status_label.config(text="✓ Stopped!", fg="green")
+        root.after(2000, lambda: save_status_label.config(text=""))
         update_status()
 
     def restart_script():
