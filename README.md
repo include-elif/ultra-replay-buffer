@@ -11,11 +11,11 @@ Dependencies:
     - If you're working with the python, it works with Python 3.11, there are two automatic package downloads.
     - To build the installer, Inno Setup is required.
 
-Build Instructions:
-    1. python3 .\src\build.py  (build executables)
-    2. .\installer\installer.iss
-    3. From inno setup run installer build (Ctrl+F9)
-
+Build:
+    Instructions:
+        1. python3 .\src\build.py  (build executables)
+        2. .\installer\installer.iss
+        3. From inno setup run installer build (Ctrl+F9)
     Standalone installer exe is found in installer_out/
     App exes found in dist/
     Cleanup with python3 .\src\build.py clean
